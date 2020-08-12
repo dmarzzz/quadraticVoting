@@ -1,0 +1,31 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/quadraticBallot.sol": {
+      "content": "pragma solidity >0.6.99 <0.8.0;\n\ncontract quadraticBallot {\n\n    struct Voter {  \n        uint vote;\n        uint balance;\n    }\n\n\n    struct Proposal {\n        bytes32 name;   // short name (up to 32 bytes)\n        uint voteCountFor; // number of accumulated votes for\n        uint voteCountAgainst; // number of accumulated votes against\n        // mapping(address=> uint) voterFrequency;\n    }\n\n    address public chairperson;\n\n    mapping(address => Voter) public voters;\n\n    Proposal[] public proposals;\n\n    \n    constructor(bytes32[] memory proposalNames) {\n\n        chairperson = msg.sender;\n\n        for(uint i =0; i < proposalNames.length ;i++){\n            proposals.push(Proposal(\n                { \n                    name: proposalNames[i],\n                    voteCountFor: 0,\n                    voteCountAgainst : 0\n                }));\n        }\n\n    }\n\n    function getChairPerson() public view returns(address){\n        return chairperson;\n    }\n\n\n    //have to keep track of how many times someone voted for something\n    //keep a vote count array?\n    //each proposal gets a mapping?\n    // function vote(uint proposalName) {\n    //     voters[msg.sender].vote;\n    // }\n\n\n\n\n}\n"
+    }
+  },
+  "settings": {
+    "metadata": {
+      "useLiteralContent": true
+    },
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers"
+        ],
+        "": [
+          "id",
+          "ast"
+        ]
+      }
+    }
+  }
+}
