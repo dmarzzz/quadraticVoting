@@ -19,78 +19,71 @@ contract quadraticBallot {
 
     mapping(address => Voter) public voters;
 
-    //temporarily restricting to max length of 1 proposals for simplicity
+    //temporarily restricting to max length of 1 proposals for simplicity issua#1A
     mapping(address => uint) public voterFreq1;
 
     Proposal[] public proposals;
 
     
-    constructor(bytes32[] memory proposalNames) {
+    constructor() {
 
         chairperson = msg.sender;
 
-        for(uint i =0; i < proposalNames.length ;i++){
+        // for(uint i =0; i < proposalNames.length ;i++){
             proposals.push(Proposal(
                 { 
-                    name: proposalNames[i],
+                    name: 'test',
                     voteCountFor: 0,
                     voteCountAgainst : 0
                 }));
-        }
+        // }
 
     }
 
     //have to keep track of how many times someone voted for something
     //keep a vote count array?
     //each proposal gets a mapping?
-    function vote(uint proposalName, uint direction) public view{
+    function vote(uint proposalName, uint direction) public{
         Voter storage sender = voters[msg.sender];
 
+        //init freq value as fix to #1A
         if (voterFreq1[msg.sender] ==0 ){
             voterFreq1[msg.sender]=1;
         }
 
         //direction == 0 means against 
         if (direction ==0){
-
-            if(sender.balance<voterFreq1[msg.sender]){
-                //quit
-            }
-            else{
-            sender.balance -= voterFreq1[msg.sender]; //can u do this?
-            proposals[proposalName].voteCountFor ++; //idk if this works either
-            voterFreq1[msg.sender]++;
+            //cant do a balance for now
+            // require(sender.balance >= voterFreq1[msg.sender], "Balance too low");
+            //subtract balance
+            //sender.balance -= voterFreq1[msg.sender]; //can u do this?
+            //increase voteCount for proposal
+            proposals[proposalName].voteCountAgainst++; //voterFreq1[msg.sender]; //idk if this works either
+            //increase cost for next vote for user
             voterFreq1[msg.sender]**2;
-            }
         }
-        //direction ==1 means for
         else{
-
+            proposals[proposalName].voteCountFor++; //voterFreq1[msg.sender]; //idk if this works either
+            voterFreq1[msg.sender]**2;
         }
-        
     }
 
-    // function vote(uint proposal) public {
-    //     Voter storage sender = voters[msg.sender];
-    //     require(sender.weight != 0, "Has no right to vote");
-    //     require(!sender.voted, "Already voted.");
-    //     sender.voted = true;
-    //     sender.vote = proposal;
-
-    //     // If `proposal` is out of the range of the array,
-    //     // this will throw automatically and revert all
-    //     // changes.
-    //     proposals[proposal].voteCount += sender.weight;
-    // }
-
-
-
-
-
+    //im not sure a better way to set the user balance to 10
+    function registerVoter() public{
+        voters[msg.sender].balance = 10;
+    }
 
 
     function getChairPerson() public view returns(address){
         return chairperson;
+    }
+
+    function getVoteCountFor(uint proposalName) public view returns(uint){
+        return proposals[proposalName].voteCountFor;
+    }
+
+    function getVoteCountAgainst(uint proposalName) public view returns(uint){
+        return proposals[proposalName].voteCountAgainst;
     }
 
 }
