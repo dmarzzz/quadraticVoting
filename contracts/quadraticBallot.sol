@@ -44,25 +44,27 @@ contract quadraticBallot {
     //keep a vote count array?
     //each proposal gets a mapping?
     function vote(uint proposalName, uint direction) public{
+        //we dont allow vote canceling in terms of user balance
+        //(i.e  balanceBefore voteFor & voteAgainst (proposal1) == balanceAfter)
         Voter storage sender = voters[msg.sender];
-
         //init freq value as fix to #1A
-        if (voterFreq1[msg.sender] ==0 ){
-            voterFreq1[msg.sender]=1;
-        }
+        //cant do a balance for now
+        require(sender.balance >= voterFreq1[msg.sender], "Balance too low");
 
         //direction == 0 means against 
         if (direction ==0){
-            //cant do a balance for now
-            // require(sender.balance >= voterFreq1[msg.sender], "Balance too low");
             //subtract balance
-            //sender.balance -= voterFreq1[msg.sender]; //can u do this?
+            sender.balance -= voterFreq1[msg.sender];
             //increase voteCount for proposal
             proposals[proposalName].voteCountAgainst++; //voterFreq1[msg.sender]; //idk if this works either
             //increase cost for next vote for user
-            voterFreq1[msg.sender]**2;
+            voterFreq1[msg.sender]*=2;
+            
         }
         else{
+            //subtract balance
+            sender.balance -= voterFreq1[msg.sender];
+            //increase voteCount for proposal
             proposals[proposalName].voteCountFor++; //voterFreq1[msg.sender]; //idk if this works either
             voterFreq1[msg.sender]**2;
         }
@@ -71,6 +73,7 @@ contract quadraticBallot {
     //im not sure a better way to set the user balance to 10
     function registerVoter() public{
         voters[msg.sender].balance = 10;
+        voterFreq1[msg.sender]=1;
     }
 
 
@@ -85,5 +88,10 @@ contract quadraticBallot {
     function getVoteCountAgainst(uint proposalName) public view returns(uint){
         return proposals[proposalName].voteCountAgainst;
     }
+
+    function getBalance() public view returns(uint){
+        return voters[msg.sender].balance;
+    }
+
 
 }
