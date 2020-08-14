@@ -7,26 +7,25 @@ contract quadraticBallot {
         uint balance;
     }
 
-
     struct Proposal {
         bytes32 name;   // short name (up to 32 bytes)
         uint voteCountFor; // number of accumulated votes for
         uint voteCountAgainst; // number of accumulated votes against
-        // mapping(address=> uint) voterFrequency;
+        bool votingOpen;
     }
 
     address public chairperson;
-
     mapping(address => Voter) public voters;
-
     //temporarily restricting to max length of 1 proposals for simplicity issua#1A
     mapping(address => uint) public voterFreq1;
-
     Proposal[] public proposals;
-
+    uint public startingBalance;
+    uint public winningDirection;
     
-    constructor() {
+    //currently am not sure how to pass an array of strings into here from the api side 
+    constructor(uint32 balanceAmount) {
 
+        startingBalance= balanceAmount;
         chairperson = msg.sender;
 
         // for(uint i =0; i < proposalNames.length ;i++){
@@ -34,15 +33,12 @@ contract quadraticBallot {
                 { 
                     name: 'test',
                     voteCountFor: 0,
-                    voteCountAgainst : 0
+                    voteCountAgainst : 0,
+                    votingOpen : true
                 }));
         // }
-
     }
 
-    //have to keep track of how many times someone voted for something
-    //keep a vote count array?
-    //each proposal gets a mapping?
     function vote(uint proposalName, uint direction) public{
         //we dont allow vote canceling in terms of user balance
         //(i.e  balanceBefore voteFor & voteAgainst (proposal1) == balanceAfter)
@@ -50,6 +46,7 @@ contract quadraticBallot {
         //init freq value as fix to #1A
         //cant do a balance for now
         require(sender.balance >= voterFreq1[msg.sender], "Balance too low");
+        require(proposals[proposalName].votingOpen==true);
 
         //direction == 0 means against 
         if (direction ==0){
@@ -59,7 +56,6 @@ contract quadraticBallot {
             proposals[proposalName].voteCountAgainst++; //voterFreq1[msg.sender]; //idk if this works either
             //increase cost for next vote for user
             voterFreq1[msg.sender]*=2;
-            
         }
         else{
             //subtract balance
@@ -70,12 +66,26 @@ contract quadraticBallot {
         }
     }
 
-    //im not sure a better way to set the user balance to 10
+
     function registerVoter() public{
-        voters[msg.sender].balance = 10;
+        voters[msg.sender].balance = startingBalance;
         voterFreq1[msg.sender]=1;
     }
 
+    //disable voting and finalize winner
+    function closeVote(uint proposalName) public{
+        require(msg.sender == chairperson);
+        proposals[proposalName].votingOpen = false;
+        if( proposals[proposalName].voteCountFor > proposals[proposalName].voteCountAgainst){
+            winningDirection = 1;
+        }
+        else{
+            //direction == 0 means against
+            winningDirection = 0;
+        }
+    }
+
+    //getters
 
     function getChairPerson() public view returns(address){
         return chairperson;
@@ -93,5 +103,8 @@ contract quadraticBallot {
         return voters[msg.sender].balance;
     }
 
+    function getWinner() public view returns(uint){
+        return winningDirection;
+    }
 
 }
