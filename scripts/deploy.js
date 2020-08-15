@@ -19,19 +19,19 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const quadraticBallot = await ethers.getContractFactory("quadraticBallot");
-  const ballot = await quadraticBallot.deploy(8);
-  await ballot.deployed();
+  const Ballot = await ethers.getContractFactory("quadraticBallot");
+  const quadraticBallot = await Ballot.deploy(8);
+  await quadraticBallot.deployed();
 
-  console.log("ballot address:", ballot.address);
+  console.log("ballot address:", quadraticBallot.address);
 
   // We also save the contract's artifacts and address in the client directory
-  saveClientFiles(ballot);
+  saveClientFiles(quadraticBallot);
 }
 
 //TO DO: save artifacts to demo and backend
 
-function saveClientFiles(ballot) {
+function saveClientFiles(quadraticBallot) {
   const fs = require("fs");
   const contractsDir = __dirname + "/../client/src/contracts";
 
@@ -41,12 +41,12 @@ function saveClientFiles(ballot) {
 
   fs.writeFileSync(
     contractsDir + "/contract-address.json",
-    JSON.stringify({ ballot: ballot.address }, undefined, 2)
+    JSON.stringify({ ballot: quadraticBallot.address }, undefined, 2)
   );
 
   fs.copyFileSync(
-    __dirname + "/../artifacts/Ballot.json",
-    contractsDir + "/Ballot.json"
+    __dirname + "/../artifacts/quadraticBallot.json",
+    contractsDir + "/quadraticBallot.json"
   );
 }
 

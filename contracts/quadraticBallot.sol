@@ -32,7 +32,7 @@ contract quadraticBallot {
             proposals.push(Proposal(
                 { 
                     name: 'test',
-                    voteCountFor: 0,
+                    voteCountFor: 1,
                     voteCountAgainst : 0,
                     votingOpen : true
                 }));
