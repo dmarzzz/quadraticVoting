@@ -30,6 +30,7 @@ function App() {
   const [voteAgainst, setVoteAgainst] = useState()
   const [voteFor2, setVoteFor2] = useState()
   const [voteAgainst2, setVoteAgainst2] = useState()
+  const [currentProposal, setCurrentProposal] = useState()
 
   useEffect(() => {
     startPollingData()
@@ -95,9 +96,9 @@ function App() {
         <h1>te$t</h1>
         <h3> user address : {Addr} </h3>
         <div>
-          <Button variant="contained" color="primary"  > 1  </Button>
-          <Button variant="contained" color="primary" >  2 </Button>
-          <Button variant="contained" color="primary" >  3 </Button>
+          <Button variant="contained" color="primary"  onClick={() => setCurrentProposal(1) } > 1  </Button>
+          <Button variant="contained" color="primary" onClick={() => setCurrentProposal(2) } >  2 </Button>
+          <Button variant="contained" color="primary" onClick={() => setCurrentProposal(3) } >  3 </Button>
         </div>
         <h3> Proposal : 0 </h3>
         <h3> user balance : {userBalance} </h3>
