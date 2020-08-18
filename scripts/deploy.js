@@ -20,7 +20,7 @@ async function main() {
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
   const Ballot = await ethers.getContractFactory("quadraticBallot");
-  const quadraticBallot = await Ballot.deploy(8);
+  const quadraticBallot = await Ballot.deploy(8, [ethers.utils.formatBytes32String('1'), ethers.utils.formatBytes32String('2') , ethers.utils.formatBytes32String('3')] );
   await quadraticBallot.deployed();
 
   console.log("ballot address:", quadraticBallot.address);

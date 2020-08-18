@@ -4,11 +4,14 @@ const { expect } = require("chai");
   let ballot;
   let Ballot;
   let startingBalance = 8;
+  let proposals = [1,2,3];
+
 
   beforeEach(async function () {
     [owner] = await ethers.getSigners();
+    console.log(ethers.utils.hexlify(proposals));
     Ballot = await ethers.getContractFactory("quadraticBallot");
-    ballot = await Ballot.deploy(startingBalance);
+    ballot = await Ballot.deploy( startingBalance , [ethers.utils.formatBytes32String('1'), ethers.utils.formatBytes32String('2') , ethers.utils.formatBytes32String('3')]   ); //ethers.utils.formatBytes32String('1')
     ballot.deployed();
   })
 
