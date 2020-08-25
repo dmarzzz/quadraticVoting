@@ -30,7 +30,8 @@ function App() {
   const [voteAgainst, setVoteAgainst] = useState()
   const [voteFor2, setVoteFor2] = useState()
   const [voteAgainst2, setVoteAgainst2] = useState()
-  const [currentProposal, setCurrentProposal] = useState()
+  const [currentProposal, setCurrentProposal] = useState(1)
+  const [voteDirection, setVoteDirection] = useState(false);
 
   useEffect(() => {
     startPollingData()
@@ -92,12 +93,55 @@ function App() {
 
   return (
     <div>
-      <div className={"App"}>
+      <Button variant="contained" color="primary" onClick={() => registerVoter()} > Register Voter </Button>
+      <div class="grid-container">
+        <div class="item1"> 
+          <h3> Proposal #   {currentProposal}   </h3>
+          <h3> user balance  {userBalance} </h3>
+        </div>
+        {/* <div class="item1"> <h3>{currentProposal}  user address : {Addr} </h3> </div> */}
+        {/* <div class="item1">
+          <Button variant="contained" color="primary" onClick={() => setCurrentProposal(1)}  > Proposal 1  </Button>
+          <Button variant="contained" color="primary" onClick={() => setCurrentProposal(2)} > Proposal 2 </Button>
+          <Button variant="contained" color="primary" onClick={() => setCurrentProposal(3)} >  Proposal 3 </Button>
+        </div> */}
+        <div class="item2"> 
+          <h3> For Total : {voteFor} </h3>  
+          <label>
+            <input
+              type="radio"
+              value="option1"
+              checked={voteDirection === 'for'}
+              onChange={() => { setVoteDirection('for') }}
+            />
+            Vote For
+            </label> 
+          </div>
+        <div class="item3">  
+          <h3> Against Total: {voteAgainst} </h3>  
+          <label>
+            <input 
+              type="radio" 
+              value="option2" 
+              checked={voteDirection === 'against'} 
+              onChange={() => { setVoteDirection('against') }} />
+            Vote Against
+          </label> 
+        </div>
+        <div class="item4"> <h3> <Button variant="contained" color="primary" onClick={() => vote()} > Vote For </Button> </h3>  </div>
+        {/* <div class="item3">  <h3> <Button variant="contained" color="primary" onClick={() => vote(0)} > Vote Against </Button> </h3>  </div> */}
+
+      </div>
+      <div>
+      </div>
+
+
+      {/* <div className={"App"}>
         <h1>te$t</h1>
         <h3> user address : {Addr} </h3>
         <div>
           <Button variant="contained" color="primary"  onClick={() => setCurrentProposal(1) } > 1  </Button>
-          <Button variant="contained" color="primary" onClick={() => setCurrentProposal(2) } >  2 </Button>
+          <Button variant="contained" color="primary" onClick={() => {setCurrentProposal(2); console.log(currentProposal)} } >  2 </Button>
           <Button variant="contained" color="primary" onClick={() => setCurrentProposal(3) } >  3 </Button>
         </div>
         <h3> Proposal : 0 </h3>
@@ -110,27 +154,7 @@ function App() {
         <Button variant="contained" color="primary" onClick={() => vote(1)} > Vote For </Button>
         <Button variant="contained" color="primary" onClick={() => vote(0)} > Vote Against </Button>
         <Button variant="contained" color="primary" onClick={() => vote2(1)} > Vote For2 </Button>
-      </div>
-      <div class="grid-container">
-        <div class="item1"> <h3> user address : {Addr} </h3> </div>
-        <div class="item1">
-          <Button variant="contained" color="primary"  > Proposal 1  </Button>
-          <Button variant="contained" color="primary" > Proposal 2 </Button>
-          <Button variant="contained" color="primary" >  Proposal 3 </Button>
-        </div>
-        {/* <div class="item2">2</div> */}
-        <div class="item2"> <h3> voteFor Total : {voteFor} </h3>  </div>
-        <div class="item3">  <h3> voteAgainst Total: {voteAgainst} </h3>  </div>
-        <div class="item2"> <h3> <Button variant="contained" color="primary" onClick={() => vote(1)} > Vote For </Button> </h3>  </div>
-        <div class="item3">  <h3> <Button variant="contained" color="primary" onClick={() => vote(0)} > Vote Against </Button> </h3>  </div>
-      </div>
-
-      <div class="eqi-container">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+      </div> */}
 
     </div>
   );
@@ -156,7 +180,14 @@ function App() {
     }
   }
 
-  async function vote(direction) {
+  async function vote() {
+    let direction
+    if(voteDirection==='for'){
+      direction = 1
+    }
+    else{
+      direction = 0
+    }
     try {
       setTxError('undefined')
       const tx = await Ballot.vote(0, direction)
